@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+
+import { useEffect, useState } from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [html, setHtml] = useState("");
+  const [error, setError] = useState("");
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/1.md");
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const md = await res.text();
+
+        const marked = (window as any).marked;
+        const DOMPurify = (window as any).DOMPurify;
+
+        const raw = marked ? marked.parse(md) : md;
+        const safe = DOMPurify ? DOMPurify.sanitize(raw) : raw;
+        setHtml(safe);
+      } catch (e) {
+        setError("글을 불러오지 못했어요.");
+      }
+    })();
+  }, []);
+
+  if (error) return <p style={{ color: "crimson" }}>{error}</p>;
+  if (!html) return <p>로딩중…</p>;
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <article
+      className="markdown-body"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
 }
 
-export default App
+export default App;
