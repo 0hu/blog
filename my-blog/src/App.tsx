@@ -1,6 +1,7 @@
 import "./App.css";
 
 import { useEffect, useState } from "react";
+import Header from "./components/Header";
 
 function App() {
   const [html, setHtml] = useState("");
@@ -28,10 +29,13 @@ function App() {
   if (error) return <p style={{ color: "crimson" }}>{error}</p>;
   if (!html) return <p>로딩중…</p>;
   return (
-    <article
-      className="markdown-body"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <>
+      <Header />
+      <article
+        className="markdown-body"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    </>
   );
 }
 
