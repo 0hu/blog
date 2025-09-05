@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react";
+
 import "./App.css";
 
-import { useEffect, useState } from "react";
 import Header from "./components/Header";
 
 function App() {
@@ -10,7 +11,9 @@ function App() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/1.md");
+        // Respect Vite base path so it works on GitHub Pages
+        const mdUrl = `${import.meta.env.BASE_URL}1.md`;
+        const res = await fetch(mdUrl);
         if (!res.ok) throw new Error("HTTP " + res.status);
         const md = await res.text();
 
